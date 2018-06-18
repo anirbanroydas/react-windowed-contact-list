@@ -39,6 +39,7 @@ class App extends React.Component {
             searchResults: {items: {}, itemIDs: []},
             isFetching: false,
             isSearchResultFetching: false,
+            isSearchResultProcessing: false,
             searchText: ''
         }
         
@@ -136,17 +137,22 @@ class App extends React.Component {
     }
 
     async handleSearch(value) {
-        console.log("handleSearch: value: ", value)
         // only change searchText if its not equivalent to previos searchText
         if (this.state.searchText != value) {
             this.setState({
                 searchText: value,
-                isSearchResultFetching: (value !== '')
+                isSearchResultFetching: true,
+                isSearchResultProcessing: true
             })
         }
 
-        // if searchText is empty, don't do anything, just return to avoid re rendering
+        // // if searchText is empty, don't do anything, just return to avoid re rendering
         if (value === '') {
+            this.setState({
+                isSearchResultFetching: false,
+                isSearchResultProcessing: false,
+                searchResults: {items: {}, itemIDs: []}
+            })
             return
         }
 
@@ -188,15 +194,16 @@ class App extends React.Component {
             items: searchResultItems,
             itemIDs: searchResultItemIDs
         }
+        console.log("setSearchResults: searchResults.itemIDs.length: ", searchResults.itemIDs.length)
         this.setState({
-            searchResults: searchResults
+            searchResults: searchResults,
+            isSearchResultProcessing: false
         })
     }
 
     _renderSearchBar() {
-        const { searchResults, searchText, isSearchResultFetching } = this.state
-        console.log("_renderSearchBar: searchText: "+ searchText+ " isSearchResultFetching: "+ isSearchResultFetching)
-
+        const { searchResults, searchText, isSearchResultFetching, isSearchResultProcessing } = this.state
+        
         return (
             <div className="search-bar-container">
                 <SearchBar 
@@ -204,20 +211,21 @@ class App extends React.Component {
                     searchText={searchText}
                 />
                 <div className="search-bar-results">
-                    { (isSearchResultFetching) && searchResults.itemIDs.length + " Results" }
+                    { (isSearchResultFetching) && (!isSearchResultProcessing) && searchResults.itemIDs.length + " Results" }
                 </div>
             </div>
         )
     }
 
     render() {
-        const { contacts, isFetching, searchResults, searchText, isSearchResultFetching, isScrollingCustomElement, contactListScrollingElem } = this.state
+        const { contacts, isFetching, searchResults, searchText, isSearchResultFetching, isSearchResultProcessing, isScrollingCustomElement, contactListScrollingElem } = this.state
         
         return (
             <div className="app-container">
                 <div className="header-container">
                     <Header
                         searchText={searchText}
+                        isSearchResultProcessing={isSearchResultProcessing}
                         render={this._renderSearchBar}
                     />
                 </div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { List, AutoSizer, WindowScroller, InfiniteLoader } from 'react-virtualized';
+import { List, WindowScroller, AutoSizer } from 'react-virtualized';
 
 import '../styles/Contacts.css'
 
@@ -68,23 +68,30 @@ class ContactList extends React.Component {
             <WindowScroller
                 scrollElement={window}
             >
-                {({height, width, isScrolling, registerChild, onChildScroll, scrollTop}) => (
-                    <div ref={registerChild} className={this._listClassName}>
-                        <List
-                            autoHeight
-                            height={height}
-                            width={width}
-                            isScrolling={isScrolling}
-                            // onScroll={onChildScroll}
-                            overscanRowCount={listOverscanRowCount}
-                            rowCount={this._listRowCount}
-                            rowHeight={this._listRowHeight}
-                            // scrollToIndex={scrollToIndex}
-                            scrollTop={scrollTop}
-                            // noRowsRenderer={this._noRowsRenderer}
-                            rowRenderer={this._getContactItemRow}
-                            onRowsRendered={this._handleRowsRendered}
-                        />
+                {({height, isScrolling, registerChild, onChildScroll, scrollTop}) => (
+                    <div className="autosizerContainer">
+                        <AutoSizer disableHeight>
+                            {({width}) => (
+                                <div ref={registerChild}>
+                                    <List
+                                        autoHeight
+                                        className={this._listClassName}
+                                        height={height}
+                                        width={width}
+                                        isScrolling={isScrolling}
+                                        // onScroll={onChildScroll}
+                                        overscanRowCount={listOverscanRowCount}
+                                        rowCount={this._listRowCount}
+                                        rowHeight={this._listRowHeight}
+                                        // scrollToIndex={scrollToIndex}
+                                        scrollTop={scrollTop}
+                                        // noRowsRenderer={this._noRowsRenderer}
+                                        rowRenderer={this._getContactItemRow}
+                                        onRowsRendered={this._handleRowsRendered}
+                                    />
+                                </div>
+                            )}
+                        </AutoSizer>
                     </div>
                 )}
             </WindowScroller>
