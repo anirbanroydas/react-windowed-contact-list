@@ -1,0 +1,56 @@
+{
+  "name": "smoothload",
+  "version": "0.0.1",
+  "description": "react app to load bunch of values in a table in efficient manner",
+  "private": true,
+  "scripts": {
+    "start": "webpack-dashboard -c magenta -- webpack-dev-server --progress --open --config webpack.dev.js",
+    "start-with-jarvis": "webpack-dev-server --progress --open --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anirbanroydas/smoothload.git"
+  },
+  "keywords": [
+    "react",
+    "web",
+    "redux"
+  ],
+  "author": "Anirban Roy Das",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anirbanroydas/smoothload/issues"
+  },
+  "homepage": "https://github.com/anirbanroydas/smoothload#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.20.3",
+    "uglifyjs-webpack-plugin": "^1.2.4",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14",
+    "webpack-dashboard": "^2.0.0",
+    "webpack-dev-server": "^3.1.4",
+    "webpack-jarvis": "^0.3.2",
+    "webpack-merge": "^4.1.2",
+    "why-did-you-update": "^0.1.1"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "classnames": "^2.2.6",
+    "js-worker-search": "^1.2.1",
+    "prop-types": "^15.6.1",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
+    "react-virtualized": "^9.19.1"
+  }
+}
