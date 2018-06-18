@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import App from './components/App'
-import registerServiceWorker from './registerServiceWorker'
 
 import './styles/shared.css';
 
@@ -25,5 +24,3 @@ if (module.hot) {
     render(require('./components/App').default)
   })
 }
-
-registerServiceWorker()
