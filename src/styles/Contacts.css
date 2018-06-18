@@ -1,0 +1,63 @@
+.contactlist {
+  padding: 10px;
+  height: calc(100vh - 50px);
+  margin: 0 auto;
+  transform: translateZ(0); 
+}
+
+.contact-card {
+  display: -webkit-flex; /*Safari*/
+  display: flex;
+  overflow: hidden;
+  margin: 0 auto;
+  }
+
+.contact-card__title {
+  color: rgba(255, 255, 255, 0.8); /*#bdbebf; */
+  font-size: 15px;
+  font-weight: 400;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal; }
+
+.contact-card__subtitle {
+  color: #aaabac;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal; }
+
+
+.contact-card--full {
+  margin-bottom: 20px;
+  height: 100px;
+  max-width: 600px;
+  background: #1d1e1f; }
+
+.contact-card--full .contact-card__image {
+    align-self: flex-start;
+    width: 100px; }
+
+.contact-card--full .contact-card__main {
+    flex: 1;
+    border-left: 4px solid rgba(0, 0, 0, 0.1);
+    padding: 14px 20px 0 16px;
+    overflow: hidden; }
+
+.contact-card--full  .contact-card__title {
+    line-height: 1.38462 ;
+    }
+
+.contact-card--full  .contact-card__subtitle {
+    padding-bottom: 50px;
+    color: #aaabac !important;
+    line-height: 1.26667;
+     }
+
+.search-result-highlight {
+    color: red; /*#6caedd;*/
+    font-weight: bold;
+}
