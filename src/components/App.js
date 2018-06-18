@@ -2,17 +2,15 @@ import React from 'react'
 import SearchApi, { INDEX_MODES } from 'js-worker-search'
 import 'react-virtualized/styles.css'
 
-import { ContactList } from './ContactList.js'
-import { withInfiniteScroll } from './InfiniteScroll.js'
+import Header from './Header.js'
 import SearchBar from './SearchBar.js'
+import ContactList from './ContactList.js'
 
 import '../styles/App.css'
+import { ENGINE_METHOD_CIPHERS } from 'constants';
 
 
 const JsonFile = 'dummyJsonAPIData.json'
-
-// compose ContactList withthe HOC withInfiniteScroll to add infinite load feature
-const ContactWithInfiniteScroll = withInfiniteScroll(ContactList)
 
 const SearchAPI = new SearchApi({
     indexMode: INDEX_MODES.PREFIXES,
@@ -29,11 +27,12 @@ class App extends React.Component {
         // to load the entire json data set on initialization
         this.dummyJsonData = []
         // specifies how many data from dummyJsonData will be added to contacts and search index every time new data is loaded
-        this.limit = 500
-        // specifies the individual height of each contact item
-        this.rowHeight = 120
+        this.limit = 50
         // specifies how many extra items will be added when there is a windowed list view implementation, not applicable here
-        this.overscanRowCount = 20
+        this._listOverscanRowCount = 20
+        this._threshold = 25
+        this.contactListScrollingElem = React.createRef()
+        this.isScrollingCustomElement = true
 
         this.state = {
             contacts: {items: {}, itemIDs: []},
@@ -43,9 +42,11 @@ class App extends React.Component {
             searchText: ''
         }
         
-        this.loadMore = this.loadMore.bind(this)
+        this._loadMoreContacts = this._loadMoreContacts.bind(this)
         this.fetchJsonData = this.fetchJsonData.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
+        this.getNextJsonData = this.getNextJsonData.bind(this)
+        this._renderSearchBar = this._renderSearchBar.bind(this)
     }
 
     componentDidMount() {
@@ -134,18 +135,8 @@ class App extends React.Component {
         }
     }
 
-    loadMore() {
-        // if reached end of windoe when list if based on search result, don't load general data
-        if (this.state.isSearchResultFetching) return
-
-        // load next set of json data since its not out of search results
-        this.setState({
-            isFetching: true
-        })
-        setTimeout(() => this.getNextJsonData(this.state.contacts.itemIDs.length, this.limit), 100)
-    }
-
     async handleSearch(value) {
+        console.log("handleSearch: value: ", value)
         // only change searchText if its not equivalent to previos searchText
         if (this.state.searchText != value) {
             this.setState({
@@ -170,6 +161,17 @@ class App extends React.Component {
         this.setSearchResults(searchResultIDs)
     }
 
+    _loadMoreContacts() {
+        // if reached end of windoe when list if based on search result, don't load general data
+        if (this.state.isSearchResultFetching) return
+
+        // load next set of json data since its not out of search results
+        this.setState({
+            isFetching: true
+        })
+        setTimeout(() => this.getNextJsonData(this.state.contacts.itemIDs.length, this.limit), 100)
+    }
+
     setSearchResults(contactIDs) {
         let searchResults = {}
         let searchResultItems = {}
@@ -191,35 +193,53 @@ class App extends React.Component {
         })
     }
 
+    _renderSearchBar() {
+        const { searchResults, searchText, isSearchResultFetching } = this.state
+        console.log("_renderSearchBar: searchText: "+ searchText+ " isSearchResultFetching: "+ isSearchResultFetching)
+
+        return (
+            <div className="search-bar-container">
+                <SearchBar 
+                    onTextChange={this.handleSearch}
+                    searchText={searchText}
+                />
+                <div className="search-bar-results">
+                    { (isSearchResultFetching) && searchResults.itemIDs.length + " Results" }
+                </div>
+            </div>
+        )
+    }
+
     render() {
-        const { searchText, searchResults, contacts, isFetching, isSearchResultFetching } = this.state
+        const { contacts, isFetching, searchResults, searchText, isSearchResultFetching, isScrollingCustomElement, contactListScrollingElem } = this.state
         
         return (
-            <div>
-                <div className="header">
-                    <div className="search-bar-container">
-                        <SearchBar 
-                            onTextChange={this.handleSearch}
-                            searchText={searchText}
-                        />
-                        { (isSearchResultFetching) && 
-                            (
-                                <div className="search-bar-results">
-                                    { searchResults.itemIDs.length + " Results" }
-                                </div>
-                            )
+            <div className="app-container">
+                <div className="header-container">
+                    <Header
+                        searchText={searchText}
+                        render={this._renderSearchBar}
+                    />
+                </div>
+                <div 
+                    className="body-container"
+                    ref={this.contactListScrollingElem}
+                >
+                    <div className="contact-list-container">
+                        {/* only rnder ContactWithInfiniteScroll when either of searchResults or contacts have atleast 1 item in it */}
+                        { (((isSearchResultFetching) && (searchResults.itemIDs.length > 0)) || (contacts.itemIDs.length > 0)) &&
+                            <ContactList 
+                                contacts={(isSearchResultFetching) ? searchResults : contacts}
+                                isFetching={isFetching}
+                                isSearchResultFetching={isSearchResultFetching}
+                                isScrollingCustomElement={this.isScrollingCustomElement}
+                                customScrollingElement={this.contactListScrollingElem}
+                                loadMoreContacts={this._loadMoreContacts}
+                                threshold={this._threshold}
+                                listOverscanRowCount={this._listOverscanRowCount}
+                            />
                         }
                     </div>
-                </div>
-                <div className="contacts-container">
-                    {/* only rnder ContactWithInfiniteScroll when either of searchResults or contacts have atleast 1 item in it */}
-                    { (((isSearchResultFetching) && (searchResults.itemIDs.length > 0)) || (contacts.itemIDs.length > 0)) &&
-                        <ContactWithInfiniteScroll 
-                            contacts={(isSearchResultFetching) ? searchResults : contacts}
-                            loadMoreFunc={this.loadMore}
-                            isFetching={isFetching}
-                        />
-                    }
                 </div>
             </div>
         )

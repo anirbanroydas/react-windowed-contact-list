@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import { LoadingSpinner } from './InfiniteScroll.js'
+import { List, AutoSizer, WindowScroller, InfiniteLoader } from 'react-virtualized';
 
 import '../styles/Contacts.css'
 
@@ -22,9 +21,9 @@ class ContactItem extends React.PureComponent {
             <div className="contact-card contact-card--full">
                 <img className="contact-card__image" src={ avatar }  alt="" />
                 <div className="contact-card__main">
-                    <div className="contact-card__title">Name: name</div>
-                    <div className="contact-card__subtitile">Email: email</div>
-                    <div className="contact-card__title">Agency: agency</div>
+                    <div className="contact-card__title">Name: {name}</div>
+                    <div className="contact-card__subtitile">Email: {email}</div>
+                    <div className="contact-card__title">Agency: {agency}</div>
                 </div>
             </div>
         )
@@ -41,6 +40,16 @@ ContactItem.propTypes = {
 class ContactList extends React.Component {
     constructor(props) {
         super(props)
+
+        this._autosizerDisableHeight = true
+        this._listClassName = "contactList"
+        // specifies the individual height of each contact item
+        this._listRowHeight = 115
+        this._listAutoHeight = true
+
+        this._setWindowScrollerRef = this._setWindowScrollerRef.bind(this)
+        this._getContactItemRow = this._getContactItemRow.bind(this)
+        this._handleRowsRendered = this._handleRowsRendered.bind(this)
     }
 
     shouldComponentUpdate(prevProps) {
@@ -52,16 +61,66 @@ class ContactList extends React.Component {
     }
 
     render() {
-        const { isFetching } = this.props
-        const contactItems = this._getContactItems()
+        const { isFetching, customScrollingElement, isScrollingCustomElement, contacts, threshold, listOverscanRowCount } = this.props
+        this._listRowCount = contacts.itemIDs.length
         
         return (
-            <div className="contactlist">
-                {contactItems}
-                { (isFetching) ? <LoadingSpinner /> : null }
+            <WindowScroller
+                scrollElement={window}
+            >
+                {({height, width, isScrolling, registerChild, onChildScroll, scrollTop}) => (
+                    <div ref={registerChild} className={this._listClassName}>
+                        <List
+                            autoHeight
+                            height={height}
+                            width={width}
+                            isScrolling={isScrolling}
+                            // onScroll={onChildScroll}
+                            overscanRowCount={listOverscanRowCount}
+                            rowCount={this._listRowCount}
+                            rowHeight={this._listRowHeight}
+                            // scrollToIndex={scrollToIndex}
+                            scrollTop={scrollTop}
+                            // noRowsRenderer={this._noRowsRenderer}
+                            rowRenderer={this._getContactItemRow}
+                            onRowsRendered={this._handleRowsRendered}
+                        />
+                    </div>
+                )}
+            </WindowScroller>
+        )
+    }
+
+    _setWindowScrollerRef(windowScroller) {
+        this._windowScroller = windowScroller;
+    }
+
+    _getContactItemRow({index, isScrolling, isVisible, key, style}) {
+        const { contacts, isFetching } = this.props;
+        
+        const itemID = contacts.itemIDs[index]
+        const contact = contacts.items[itemID]
+        
+        return (
+            <div key={key} style={style}>
+                <ContactItem
+                    name={contact.name}
+                    email={contact.email}
+                    agency={contact.agency}
+                    index={index}
+                />
             </div>
         )
     }
+
+    _handleRowsRendered({ overscanStartIndex, overscanStopIndex, startIndex, stopIndex }) {
+        const { contacts, isFetching, isSearchResultFetching, loadMoreContacts, threshold } = this.props
+
+        if ((!isFetching) && (!isSearchResultFetching) && (overscanStopIndex > (contacts.itemIDs.length - threshold))) {
+            loadMoreContacts()
+        }
+    }
+
 
     _getContactItems() {
         const { contacts } = this.props
@@ -93,8 +152,12 @@ class ContactList extends React.Component {
 
 ContactList.propTypes = {
     isFetching: PropTypes.bool.isRequired,
-    contacts: PropTypes.array.isRequired
+    contacts: PropTypes.object.isRequired,
+    isSearchResultFetching: PropTypes.bool.isRequired,
+    loadMoreContacts: PropTypes.func.isRequired,
+    threshold: PropTypes.number.isRequired,
+    listOverscanRowCount: PropTypes.number.isRequired
 }
 
 
-export { ContactList, ContactItem }
+export default ContactList

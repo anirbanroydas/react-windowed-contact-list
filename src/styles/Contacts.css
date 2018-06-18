@@ -1,9 +1,15 @@
-.contactlist {
+/* .contactlist {
   padding: 10px;
   height: calc(100vh - 50px);
   margin: 0 auto;
   transform: translateZ(0); 
+} */
+
+.contactList {
+  margin-left: 10px;
+  margin-right: 10px;
 }
+
 
 .contact-card {
   display: -webkit-flex; /*Safari*/
@@ -61,3 +67,43 @@
     color: red; /*#6caedd;*/
     font-weight: bold;
 }
+
+/* 
+.contact-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  width: 100%;
+  height: 100px;
+
+  background: #1d1e1f;
+  margin-bottom: 15px;
+}
+
+.contact-item-left {
+  flex: none;
+  height: inherit;
+  width: 100px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: white;
+  color: black;
+}
+
+.contact-item-right {
+  flex: 1 1 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  height: 100%;
+  color: white;
+  padding: 10px;
+  padding-left: 20px;
+} */

@@ -1,13 +1,18 @@
-.search-bar {
-  overflow: hidden;
-  margin-top: 20px;
-  height: 40px;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 10px;
+.search-bar-test {
+    flex: auto;
+
+    height: 40px;
+    width: 100%; 
 }
 
+.search-bar {
+    flex: auto;
 
+    height: 40px;
+    width: 100%;
+    margin-top: 20px; 
+}
+  
 .search-bar_input {
   outline: none;
   border: 0;
